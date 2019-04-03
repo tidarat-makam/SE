@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+<head>
+<!-- 4.0 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<!-- 3.7 -->
+  <!-- <link rel = 'stylesheet' href="style.css"/> -->
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<!--  -->
+
+<meta charset="utf-8">
+<title>การวิเคราะห์การเจริฐเติบโตทางเศรษฐกิจ</title>
+
+<style type="text/css">
+p{
+  font-family: supermarket;
+  font-size: 20px;
+  
+}
+
+</style>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script type="text/javascript">
+  var imp = [];
+  dataArr = [];
+
+  var dataTables;
+      
+  google.charts.load('current', {'packages':['line']});
+  google.charts.setOnLoadCallback(function() {
+    var dataTb = new google.visualization.DataTable();
+    dataTb.addColumn('number', 'Month');
+    dataTb.addColumn('number', 'นำเข้า');
+    dataTb.addColumn('number', 'ส่งออก');
+    dataTb.addColumn('number', 'ดุลการค้า'); 
+
+    $("button").click(function(){
+      var I_country_code = document.getElementById("country_code").value;
+      var y = document.getElementById("year").value;
+
+      function getData(a, callback) {
+        $.getJSON("https://dataapi.moc.go.th/border-statistic?country_code=" +I_country_code+ "&year="+y+"&month="+a, function(data){   
+            var value_t1 = 0, value_t2 = 0, value_t3 = 0;
+
+            for (var i = 0; i < data.length; i++) {
+              if(data[i].data_type == "การค้าชายแดน" && data[i].transaction_type == "ส่งออก"){
+                value_t1 = data[i].value_baht;
+              }
+
+              if(data[i].data_type == "การค้าชายแดน" && data[i].transaction_type == "นำเข้า"){
+                value_t2 = data[i].value_baht;
+              }
+
+              if(data[i].data_type == "การค้าชายแดน" && data[i].transaction_type == "ดุลการค้า"){
+                value_t3 = data[i].value_baht;
+              }
+            }
+
+            dataArr.push([ a, value_t1, value_t2, value_t3 ]);
+                      
+            if (a < 12) {
+              getData(a + 1, callback);
+            } else {
+              callback();
+            }
+        });
+      }
+
+      getData(1, function() {
+        chart = new google.charts.Line(document.getElementById('line_top_x'));
+
+        console.log(dataArr);
+
+        dataTb.addRows(dataArr);
+        chart.draw(dataTb, { });
+
+        // alert("Done");
+      }); 
+
+    });
+  });
+</script>
+
+</head>
+
+<body> 
+            <p id="aa"></p>
+            <p id="bb"></p>
+
+        <div style="width: 100%;height: 107px;background-color:#113f67">
+            <div style="position:relative; top:5px; left: 13%; width: 100px;height: 100px; " class="row">
+                    <div><img src="./photo/lilthing.png" style="width: 100px;height: 100px;"/></div>       
+            </div>
+        </div>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light" style=" margin-left: 15%;margin-right: 15% ">
+          <a class="navbar-brand" href="./index.html">Home</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="./Gconomic.php">Economic growth graph</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="./growth_rate.php">growth rate</a>
+              </li>
+              </ul>
+          </div>
+        </nav>
+
+        <div style="position:relative; top:5px; left: 20%; width: 100%;" class="row">
+
+          <div class="form-group row">
+             <label for="country_code" class="col-sm-3 col-form-label">ประเทศ</label>
+                    <div class="col-sm-6">
+                        <select class="form-control chosen-select" name="country_code" id="country_code">
+                          <option value="">-- โปรดเลือก --</option>
+                          <option value="KH"> กัมพูชา - CAMBODIA (KH)</option>  
+                          <option value="LA"> ลาว - LAOS (LA)</option>
+                          <option value="MM"> เมียนมา - MYANMAR (MM)</option>
+                          <option value="MY"> มาเลเซีย - MALASIA (MY)</option>
+                        </select>
+                    </div>
+          </div>
+
+          <div class="form-group row">
+             <label for="year" class="col-sm-3 col-form-label">ปี</label>
+                    <div class="col-sm-5">
+                        <input type="number" name="year" id="year" class="form-control" />
+                    </div>
+          </div>
+
+          <!--  <div class="form-group row">
+              <label for="month" class="col-sm-3 col-form-label">เดือน</label>
+                <div class="col-sm-9">
+                  <select class="form-control" name="month">
+                    <option value="">-- เลือก --</option>
+                    <option value="1">มกราคม</option>
+                    <option value="2">กุมภาพันธ์</option>
+                    <option value="3">มีนาคม</option>
+                    <option value="4">เมษายน</option>
+                    <option value="5">พฤษภาคม</option>
+                    <option value="6">มิถุนายน</option>
+                    <option value="7">กรกฎาคม</option>
+                    <option value="8">สิงหาคม</option>
+                    <option value="9">กันยายน</option>
+                    <option value="10">ตุลาคม</option>
+                    <option value="11">พฤศจิกายน</option>
+                    <option value="12">ธันวาคม</option>
+                  </select>
+                </div>
+           </div> -->
+
+
+          <button class="btn btn-primary" style="width: 100px; height: 35px;margin-left: 5%">ค้นหา</button>
+
+        </div>
+          
+        <div id="line_top_x" style="width: 80%; height: 500px; margin: auto;"></div>
+
+
+      <div style="width: 100%;height: 107px;background-color:#113f67">
+        <div style="position:relative; top:5px; left: 20px; width: 100px;height: 100px; ">
+           
+     </div>
+     <div>
+       
+     </div>
+        
+</body>
+</html>
