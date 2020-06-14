@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html>
 <head>
@@ -26,10 +27,49 @@ p{
 }
 
 </style>
-
+ <script src="https://dataapi.moc.go.th/border-statistic" ></script>
 </head>
 
-<body> 
+<body>
+      <script type="text/javascript">
+            $(document).ready(function(){
+              
+              $("#btf").click(function(){
+                document.getElementById("mm").innerHTML = "" ;
+                document.getElementById("fy").innerHTML = "" ;
+                document.getElementById("ly").innerHTML = "" ;
+                document.getElementById("yoy").innerHTML = "" ;
+                // var data;
+                country_code= $("select[name=country_code]").val(); 
+                fy= $("input[name=yearF]").val(); 
+                ly= $("input[name=yearL]").val();
+                tstype = $("select[name=transaction_type]").val();
+                $.get("https://dataapi.moc.go.th/border-statistic?country_code="+ country_code +"&year="+ fy +"&limit= 100", function(data1){
+                      for(i=tstype;i<96;i++){
+                      if(i%8==tstype){
+                        document.getElementById("mm").innerHTML += data1[i].month + "<br><br>";
+                        document.getElementById("fy").innerHTML += data1[i].value_baht + "<br><br>";
+                      }
+                    }
+                    $.get("https://dataapi.moc.go.th/border-statistic?country_code="+ country_code +"&year="+ ly +"&limit=100", function(data2){
+                      for(i=tstype;i<96;i++){
+                        if(i%8==tstype){
+                          // document.getElementById("mm").innerHTML += data1[i].month + "<br>";
+                          document.getElementById("ly").innerHTML += data2[i].value_baht + "<br><br>";
+                          // document.getElementById("mm").innerHTML += data[i].month + "<br>";
+                          inters = data2[i].value_baht-data1[i].value_baht;
+                          yoy = inters*1/data2[i].value_baht;
+                          document.getElementById("yoy").innerHTML += yoy + "<br><br>";
+                          }
+                        }
+                    });
+                    
+                });
+              });
+            });
+      </script>
+
+
   
         <div style="width: 100%;height: 107px;background-color:#113f67">
             <div style="position:relative; top:5px; left: 13%; width: 100px;height: 100px; " class="row">
@@ -55,9 +95,8 @@ p{
           </div>
         </nav>
 
-
-        <form id="search-form" method="get" action="#">
-        <div style=" position:relative;left: 15%;" class="row">
+        <form id="search-form" method="get" action="">
+        <div style=" position:relative;left: 20%;" class="row">
 
           <div class="form-group row">
              <label for="country_code" class="col-sm-3 col-form-label">ประเทศ</label>
@@ -77,37 +116,51 @@ p{
                     <div class="col-sm-7">
                         <select class="form-control chosen-select" name="transaction_type">
                           <option value="">-- เลือก --</option>
-                          <option value=""> นำเข้า       </option>
-                          <option value=""> ส่งออก      </option>
-                          <option value=""> ดุลการค้า    </option>
-                          <option value=""> มูลค่ารวม    </option>
+                          <option value="6"> นำเข้า       </option>
+                          <option value="5"> ส่งออก      </option>
+                          <option value="7"> ดุลการค้า    </option>
+                          <option value="4"> มูลค่ารวม    </option>
                         </select>
                     </div>
           </div>
-
            <div class="form-group row">
-             <label for="yearF" class="col-sm-3 col-form-label">ปีต้น</label>
-                    <div class="col-sm-5">
-                        <input type="number" name="yearF" class="form-control" />
+             <label for="yearF" class="col-sm-4 col-form-label">ปีต้น</label>
+                    <div class="col-sm-7">
+                        <input type="number" name="yearF" class="form-control" min="2007" max="2018" value="2018" />
                     </div>
           </div>
 
           <div class="form-group row">
-             <label for="yearF" class="col-sm-3 col-form-label">ปีหลัง</label>
-                    <div class="col-sm-5">
-                        <input type="number" name="yearL" class="form-control" />
+             <label for="yearF" class="col-sm-5 col-form-label">ปีหลัง</label>
+                    <div class="col-sm-7">
+                    <input type="number" name="yearL" class="form-control" min="2008" max="2019" value="2019" />
+                        <!-- <input type="number" name="yearL" class="form-control" /> -->
                     </div>
           </div>
-
-
-
-
-          <button type="button" class="btn btn-primary" style="width: 100px; height: 35px;">ค้นหา</button>
+          <button type="button" id="btf" class="btn btn-primary" style="width: 100px; height: 35px;">ค้นหา</button>
 
         </div>
         </form>
+        
+        
+<center>
+        <table style="width:50%;" class="table">
+        
+          <tr>
+            <td style="width: 20%" >เดือน</td>
+            <td style="width: 30%" >ปีตั้งต้น </td>
+            <td style="width: 30%" >ปีหลัง <script> document.write(ly);  </script> </td>
+            <td style="width: 20%" >%YoY</td>
+          </tr>
+          <tr>
+            <td id="mm"></td>
+            <td id="fy"></td>
+            <td id="ly"></td>
+            <td id="yoy"></td>
+          </tr>
+        </table>
+</center>
 
-                  
       <div style="width: 100%;height: 107px;background-color:#113f67">
         <div style="position:relative; top:5px; left: 20px; width: 100px;height: 100px; ">
            
